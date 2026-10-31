@@ -118,6 +118,20 @@ OrbitLib:Init()
 
 ## API
 
+```lua
+Tab:CB()   -- Button
+Tab:CT()   -- Toggle
+Tab:CS()   -- Slider
+Tab:CD()   -- Dropdown
+Tab:CTX()  -- Textbox
+Tab:CK()   -- Keybind
+Tab:CL()   -- Label
+Tab:CP()   -- Paragraph
+Tab:CSN()  -- Section
+Tab:CC()   -- Colorpicker
+```
+
+
 - `OrbitLib:MakeWindow(options)` (also `CreateWindow`)
 - `Window:MakeTab({Name, Icon, PremiumOnly})` (also `CreateTab(name)`)
 - `Tab:CSN({Name})` — section
