@@ -1,23 +1,35 @@
--- Example LocalScript for Roblox Studio
--- Requires the OrbitUI folder/module structure described in README.md.
+-- Example LocalScript for an experience you own.
+-- Install the OrbitUI ModuleScripts as described in README.md.
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local OrbitUI = require(ReplicatedStorage.OrbitUI.src.OrbitUI)
+local Orbit = require(ReplicatedStorage.OrbitUI.src.OrbitUI)
 
-local Window = OrbitUI.CreateWindow({
+local Window = Orbit:CreateWindow({
     Name = "OrbitUI",
-    Subtitle = "A modular interface starter",
+    LoadingTitle = "OrbitUI",
+    Subtitle = "Developer interface demo",
     Width = 620,
-    Height = 420,
+    Height = 440,
+})
+
+Window:Notify({
+    Title = "OrbitUI loaded",
+    Content = "The interface is ready.",
+    Duration = 4,
 })
 
 local Main = Window:CreateTab("Main")
+
+Main:CreateSection("Basic controls")
 
 Main:CreateButton({
     Name = "Example action",
     ButtonText = "Click",
     Callback = function()
-        print("OrbitUI button pressed")
+        Window:Notify({
+            Title = "Button clicked",
+            Content = "Your callback ran successfully.",
+        })
     end,
 })
 
@@ -32,7 +44,26 @@ Main:CreateToggle({
 Main:CreateInput({
     Name = "Username",
     PlaceholderText = "Enter a username",
+    Callback = function(value, enterPressed)
+        print("Entered:", value, "Submitted:", enterPressed)
+    end,
+})
+
+Main:CreateSlider({
+    Name = "Volume",
+    Range = {0, 100},
+    CurrentValue = 35,
+    DecimalPlaces = 0,
     Callback = function(value)
-        print("Entered:", value)
+        print("Volume:", value)
+    end,
+})
+
+Main:CreateDropdown({
+    Name = "Quality",
+    Options = {"Low", "Medium", "High"},
+    CurrentOption = "Medium",
+    Callback = function(option)
+        print("Quality:", option)
     end,
 })
