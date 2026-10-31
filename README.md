@@ -19,108 +19,25 @@ OrbitUI creates its ScreenGui under the local player's `PlayerGui`; it does not 
 
 ## Quick start
 
+Place the OrbitUI ModuleScripts in `ReplicatedStorage/OrbitUI/src` as described above, then run this from a client LocalScript in `StarterPlayerScripts`:
+
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local OrbitLib = require(ReplicatedStorage.OrbitUI.src.OrbitUI)
 
-local Window = OrbitLib:MakeWindow({
-    Name = "Orbit Hub",
-    HidePremium = true,
-    SaveConfig = false,
-    IntroEnabled = false,
-    CloseCallback = function()
-        print("Window closed")
-    end,
-})
-
-local Main = Window:MakeTab({
-    Name = "Main",
-    Icon = "",
-    PremiumOnly = false,
-})
-
-local Section = Main:CSN({Name = "General"})
+local Window = OrbitLib:MakeWindow({Name = "OrbitUI"})
+local Main = Window:MakeTab({Name = "Main"})
 
 Main:CB({
-    Name = "Example button",
+    Name = "Say hello",
     Callback = function()
-        print("Clicked")
+        print("Hello")
     end,
-})
-
-local Toggle = Main:CT({
-    Name = "Example toggle",
-    Default = false,
-    Flag = "example_toggle",
-    Save = false,
-    Callback = function(value)
-        print("Toggle:", value)
-    end,
-})
-
-local Slider = Main:CS({
-    Name = "Amount",
-    Min = 0,
-    Max = 100,
-    Default = 25,
-    Increment = 1,
-    ValueName = "units",
-    Callback = function(value)
-        print("Slider:", value)
-    end,
-})
-
-local Dropdown = Main:CD({
-    Name = "Mode",
-    Default = "Normal",
-    Options = {"Easy", "Normal", "Hard"},
-    Callback = function(value)
-        print("Mode:", value)
-    end,
-})
-
-Main:CTX({
-    Name = "Search",
-    Default = "",
-    Callback = function(value)
-        print("Input:", value)
-    end,
-})
-
-Main:CL("A simple label")
-Main:CP("About", "This is a paragraph description.")
-
-local Color = Main:CC({
-    Name = "Accent color",
-    Default = Color3.fromRGB(120, 90, 255),
-    Callback = function(value)
-        print("Color:", value)
-    end,
-})
-
-local Bind = Main:CK({
-    Name = "Action key",
-    Default = Enum.KeyCode.E,
-    Hold = false,
-    Callback = function()
-        print("Key pressed")
-    end,
-})
-
-Toggle:Set(true)
-Slider:Set(50)
-Dropdown:Set("Hard")
-Color:Set(Color3.fromRGB(255, 80, 80))
-Bind:Set(Enum.KeyCode.Q)
-
-OrbitLib:MakeNotification({
-    Name = "OrbitUI",
-    Content = "Interface initialized",
-    Time = 4,
 })
 
 OrbitLib:Init()
 ```
+
 
 ## API
 
