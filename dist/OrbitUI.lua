@@ -547,8 +547,6 @@ function Controls.CreateKeybind(tab, options)
     return handle
 end
 
-return Controls
-
     return Controls
 
 end
@@ -792,7 +790,6 @@ function Tab:CK(options) return self:AddBind(options) end
 function Tab:CL(text) return self:AddLabel(text) end
 function Tab:CP(title, content) return self:AddParagraph(title, content) end
 function Tab:CC(options) return self:AddColorpicker(options) end
-return Tab
 
     return Tab
 
@@ -1072,8 +1069,6 @@ function Window:Destroy()
     end
 end
 
-return Window
-
     return Window
 
 end
@@ -1130,8 +1125,6 @@ OrbitUI.MakeWindow = function(selfOrOptions, maybeOptions)
     return window
 end
 OrbitUI.CreateWindow = OrbitUI.MakeWindow
-
-return OrbitUI
 
     return OrbitUI
 
