@@ -22,8 +22,7 @@ OrbitUI creates its ScreenGui under the local player's `PlayerGui`; it does not 
 Place the OrbitUI ModuleScripts in `ReplicatedStorage/OrbitUI/src` as described above, then run this from a client LocalScript in `StarterPlayerScripts`:
 
 ```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local OrbitLib = require(ReplicatedStorage.OrbitUI.src.OrbitUI)
+local OrbitLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/KaiTheKaiju2142/OrbitUI/main/dist/OrbitUI.lua"))()
 
 local Window = OrbitLib:MakeWindow({Name = "OrbitUI"})
 local Main = Window:MakeTab({Name = "Main"})
