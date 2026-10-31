@@ -2,6 +2,12 @@
 
 OrbitUI is a modular Luau interface library for Roblox experiences you own or are authorized to develop. Its public API follows the familiar Orion-style pattern documented in the supplied reference, with OrbitUI's own implementation and visuals.
 
+## Standalone distribution
+
+A bundled, single-file build is available at `dist/OrbitUI.lua`. It includes the controls, tabs, window, and public API in one file and returns the OrbitUI library table. It has no `require(script.Parent...)` dependencies.
+
+In a client-side Luau environment that explicitly provides a permitted `loadstring` implementation, pass the source text of `dist/OrbitUI.lua` to that environment's loader and use the returned table. The bundle itself does not fetch remote code or perform injection. Standard Roblox client LocalScripts do not provide `loadstring`; use the ModuleScript installation below in ordinary Roblox Studio experiences.
+
 ## Installation (Roblox Studio)
 
 1. Create a Folder named `OrbitUI` under `ReplicatedStorage`.
