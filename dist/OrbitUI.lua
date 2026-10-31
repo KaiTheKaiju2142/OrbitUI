@@ -1,8 +1,7 @@
--- OrbitUI standalone distribution.
--- Single-file Luau build; returns the OrbitUI library table.
--- Designed for a client environment with Roblox UI services available.
+-- OrbitUI standalone distribution. Generated from src modules.
 
 local function buildControls()
+
 -- OrbitUI controls: Section, Button, Toggle, Input, Slider, Dropdown
 
 local Controls = {}
@@ -23,8 +22,9 @@ local function createRow(tab, name, height)
         BackgroundColor3 = tab.Window.Theme.Background,
         BorderSizePixel = 0,
     }, tab.Page)
-    make("UICorner", { CornerRadius = UDim.new(0, 7) }, row)
-    make("UIStroke", { Color = tab.Window.Theme.Border, Thickness = 1 }, row)
+    make("UICorner", { CornerRadius = UDim.new(0, 8) }, row)
+    make("UIStroke", { Color = tab.Window.Theme.Border, Thickness = 1, Transparency = 0.18 }, row)
+    make("UIGradient", { Color = ColorSequence.new(Color3.fromRGB(13, 13, 13), Color3.fromRGB(3, 3, 3)), Rotation = 90 }, row)
     return row
 end
 
@@ -86,31 +86,45 @@ function Controls.CreateToggle(tab, options)
     local row = createRow(tab, "Toggle")
     createLabel(tab, row, options.Name or "Toggle")
 
+    local TweenService = game:GetService("TweenService")
     local enabled = options.CurrentValue == true
     local button = make("TextButton", {
         AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -9, 0.5, 0),
-        Size = UDim2.fromOffset(42, 24),
-        BackgroundColor3 = enabled and tab.Window.Theme.Accent or tab.Window.Theme.SurfaceLight,
+        Position = UDim2.new(1, -13, 0.5, 0),
+        Size = UDim2.fromOffset(44, 22),
+        BackgroundColor3 = enabled and Color3.fromRGB(205, 205, 205) or Color3.fromRGB(23, 23, 23),
         BorderSizePixel = 0,
         Text = "",
         AutoButtonColor = false,
     }, row)
     make("UICorner", { CornerRadius = UDim.new(1, 0) }, button)
+    make("UIStroke", { Color = Color3.fromRGB(58, 58, 58), Thickness = 1, Transparency = 0.2 }, button)
+    make("UIGradient", { Color = ColorSequence.new(enabled and Color3.fromRGB(245, 245, 245) or Color3.fromRGB(35, 35, 35), enabled and Color3.fromRGB(150, 150, 150) or Color3.fromRGB(9, 9, 9)), Rotation = 90 }, button)
 
     local knob = make("Frame", {
+        Name = "Knob",
         AnchorPoint = Vector2.new(0, 0.5),
-        Position = enabled and UDim2.new(1, -21, 0.5, 0) or UDim2.fromOffset(3, 0),
+        Position = enabled and UDim2.new(1, -19, 0.5, 0) or UDim2.new(0, -3, 0.5, 0),
         Size = UDim2.fromOffset(18, 18),
-        BackgroundColor3 = Color3.new(1, 1, 1),
+        BackgroundColor3 = Color3.fromRGB(248, 248, 248),
         BorderSizePixel = 0,
+        ZIndex = 2,
     }, button)
     make("UICorner", { CornerRadius = UDim.new(1, 0) }, knob)
+    make("UIStroke", { Color = Color3.fromRGB(175, 175, 175), Thickness = 1, Transparency = 0.12 }, knob)
+    make("UIGradient", { Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(190, 190, 190)), Rotation = 90 }, knob)
 
     local function setValue(value, fireCallback)
         enabled = value == true
-        button.BackgroundColor3 = enabled and tab.Window.Theme.Accent or tab.Window.Theme.SurfaceLight
-        knob.Position = enabled and UDim2.new(1, -21, 0.5, 0) or UDim2.fromOffset(3, 0)
+        local trackColor = enabled and Color3.fromRGB(205, 205, 205) or Color3.fromRGB(23, 23, 23)
+        local gradient = button:FindFirstChildOfClass("UIGradient")
+        if gradient then
+            gradient.Color = ColorSequence.new(enabled and Color3.fromRGB(245, 245, 245) or Color3.fromRGB(35, 35, 35), enabled and Color3.fromRGB(150, 150, 150) or Color3.fromRGB(9, 9, 9))
+        end
+        TweenService:Create(button, TweenInfo.new(0.16, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundColor3 = trackColor}):Play()
+        TweenService:Create(knob, TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Position = enabled and UDim2.new(1, -19, 0.5, 0) or UDim2.new(0, -3, 0.5, 0)
+        }):Play()
         if fireCallback and typeof(options.Callback) == "function" then
             options.Callback(enabled)
         end
@@ -533,13 +547,16 @@ function Controls.CreateKeybind(tab, options)
     return handle
 end
 
-
     return Controls
+
 end
+
 local Controls = buildControls()
 
 local function buildTab(Controls)
+
 -- OrbitUI tab implementation
+
 
 
 local Tab = {}
@@ -571,7 +588,8 @@ function Tab.new(window, name)
         TextColor3 = window.Theme.Muted,
         TextSize = 12,
     }, window.Sidebar)
-    make("UICorner", { CornerRadius = UDim.new(0, 6) }, button)
+    make("UICorner", { CornerRadius = UDim.new(0, 7) }, button)
+    make("UIStroke", { Color = Color3.fromRGB(32, 32, 32), Thickness = 1, Transparency = 0.45 }, button)
     self.Button = button
 
     local page = make("ScrollingFrame", {
@@ -611,7 +629,7 @@ function Tab:Show()
     end
     self.Page.Visible = true
     self.Button.BackgroundTransparency = 0
-    self.Button.BackgroundColor3 = self.Window.Theme.SurfaceLight
+    self.Button.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
     self.Button.TextColor3 = self.Window.Theme.Text
 end
 
@@ -774,24 +792,28 @@ function Tab:CP(title, content) return self:AddParagraph(title, content) end
 function Tab:CC(options) return self:AddColorpicker(options) end
 
     return Tab
+
 end
+
 local Tab = buildTab(Controls)
 
 local function buildWindow(Tab)
+
 -- OrbitUI window implementation
+
 
 
 local Window = {}
 Window.__index = Window
 
 local DEFAULT_THEME = {
-    Background = Color3.fromRGB(15, 15, 18),
-    Surface = Color3.fromRGB(23, 23, 28),
-    SurfaceLight = Color3.fromRGB(32, 32, 39),
-    Text = Color3.fromRGB(242, 242, 247),
-    Muted = Color3.fromRGB(155, 155, 168),
-    Accent = Color3.fromRGB(120, 90, 255),
-    Border = Color3.fromRGB(48, 48, 58),
+    Background = Color3.fromRGB(0, 0, 0),
+    Surface = Color3.fromRGB(7, 7, 7),
+    SurfaceLight = Color3.fromRGB(15, 15, 15),
+    Text = Color3.fromRGB(245, 245, 245),
+    Muted = Color3.fromRGB(145, 145, 145),
+    Accent = Color3.fromRGB(225, 225, 225),
+    Border = Color3.fromRGB(38, 38, 38),
 }
 
 local function make(className, properties, parent)
@@ -845,8 +867,9 @@ function Window.new(options)
         ClipsDescendants = false,
     }, gui)
     self.Root = root
-    make("UICorner", { CornerRadius = UDim.new(0, 10) }, root)
-    make("UIStroke", { Color = self.Theme.Border, Thickness = 1 }, root)
+    make("UICorner", { CornerRadius = UDim.new(0, 13) }, root)
+    make("UIStroke", { Color = self.Theme.Border, Thickness = 1, Transparency = 0.12 }, root)
+    make("UIGradient", { Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(13, 13, 13)), ColorSequenceKeypoint.new(0.45, Color3.fromRGB(2, 2, 2)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))}), Rotation = 90 }, root)
 
     local top = make("Frame", {
         Name = "TopBar",
@@ -854,7 +877,9 @@ function Window.new(options)
         BackgroundColor3 = self.Theme.Surface,
         BorderSizePixel = 0,
     }, root)
-    make("UICorner", { CornerRadius = UDim.new(0, 10) }, top)
+    make("UICorner", { CornerRadius = UDim.new(0, 13) }, top)
+    make("UIGradient", { Color = ColorSequence.new(Color3.fromRGB(24, 24, 24), Color3.fromRGB(5, 5, 5)), Rotation = 90 }, top)
+    make("Frame", { Name = "GlossLine", Position = UDim2.new(0, 14, 1, -1), Size = UDim2.new(1, -28, 0, 1), BackgroundColor3 = Color3.fromRGB(65, 65, 65), BackgroundTransparency = 0.45, BorderSizePixel = 0 }, top)
 
     make("TextLabel", {
         Name = "Title",
@@ -924,7 +949,9 @@ function Window.new(options)
         BackgroundColor3 = self.Theme.Surface,
         BorderSizePixel = 0,
     }, root)
-    make("UICorner", { CornerRadius = UDim.new(0, 8) }, content)
+    make("UICorner", { CornerRadius = UDim.new(0, 9) }, content)
+    make("UIStroke", { Color = Color3.fromRGB(20, 20, 20), Thickness = 1 }, content)
+    make("UIGradient", { Color = ColorSequence.new(Color3.fromRGB(9, 9, 9), Color3.fromRGB(3, 3, 3)), Rotation = 90 }, content)
     self.Content = content
 
     -- Drag the window from its title bar.
@@ -1042,14 +1069,17 @@ function Window:Destroy()
     end
 end
 
-
     return Window
+
 end
+
 local Window = buildWindow(Tab)
 
 local function buildOrbitUI(Window)
+
 -- OrbitUI public entry point
 -- UI-only library for authorized Roblox experiences.
+
 
 
 local OrbitUI = {
@@ -1096,7 +1126,9 @@ OrbitUI.MakeWindow = function(selfOrOptions, maybeOptions)
 end
 OrbitUI.CreateWindow = OrbitUI.MakeWindow
 
-
     return OrbitUI
+
 end
+
 return buildOrbitUI(Window)
+
