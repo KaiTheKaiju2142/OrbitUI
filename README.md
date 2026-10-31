@@ -1,10 +1,10 @@
 # OrbitUI
 
-A modular Roblox UI library for **Roblox Studio experiences**. OrbitUI is designed to provide a clean, Rayfield-inspired developer interface with windows, tabs, and reusable controls.
+OrbitUI is a modular, code-driven Roblox interface library for experiences you develop. It creates its GUI at runtime from Luau calls, with a dark default theme and a Rayfield-inspired developer experience.
 
-## Project status
+## Current status
 
-**Starter foundation** — the first working window, tab, button, toggle, and text input APIs are being built. More controls, themes, documentation, and examples can be added incrementally.
+**Early foundation (0.2.0).** Includes windows, draggable title bars, tabs, sections, buttons, toggles, text inputs, sliders, dropdowns, and notifications. The API and visuals are still evolving.
 
 ## Source layout
 
@@ -20,56 +20,89 @@ OrbitUI/
 └── README.md
 ```
 
-## Studio setup
+## Roblox Studio installation
 
-1. In Roblox Studio, create a Folder named `OrbitUI` under `ReplicatedStorage`.
-2. Recreate the `src` files as **ModuleScripts** inside that folder (the source files in this repository are the contents for those ModuleScripts).
-3. Place `OrbitUI.lua`, `Window.lua`, `Tab.lua`, and `Controls.lua` together under the same `src` folder.
-4. Require the `OrbitUI` ModuleScript from a LocalScript in `StarterPlayerScripts`.
+1. In your experience, create a Folder named `OrbitUI` under `ReplicatedStorage`.
+2. Inside it, create a Folder named `src`.
+3. Create four ModuleScripts inside `src`: `OrbitUI`, `Window`, `Tab`, and `Controls`. Copy the matching source file contents into each ModuleScript.
+4. Put the example LocalScript in `StarterPlayerScripts`.
 
-Example:
+The library creates the ScreenGui and all controls at runtime; you do not need to manually build the interface in Studio.
+
+## Quick start
 
 ```lua
-local OrbitUI = require(game.ReplicatedStorage.OrbitUI.src.OrbitUI)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Orbit = require(ReplicatedStorage.OrbitUI.src.OrbitUI)
 
-local Window = OrbitUI.CreateWindow({
-    Name = "My Orbit UI",
-    Subtitle = "Developer tools",
+local Window = Orbit:CreateWindow({
+    Name = "My Hub",
+    Subtitle = "Made with OrbitUI",
+    Width = 620,
+    Height = 440,
 })
 
-local MainTab = Window:CreateTab("Main")
+local Main = Window:CreateTab("Main")
 
-MainTab:CreateButton({
-    Name = "Example button",
+Main:CreateSection("Controls")
+
+Main:CreateButton({
+    Name = "Run action",
     Callback = function()
         print("Button clicked")
     end,
 })
 
-MainTab:CreateToggle({
-    Name = "Example toggle",
+Main:CreateToggle({
+    Name = "Enabled",
     CurrentValue = false,
-    Callback = function(enabled)
-        print("Toggle:", enabled)
+    Callback = function(value)
+        print("Enabled:", value)
     end,
 })
 
-MainTab:CreateInput({
-    Name = "Player name",
-    PlaceholderText = "Enter a name",
+Main:CreateSlider({
+    Name = "Amount",
+    Range = {0, 100},
+    CurrentValue = 25,
     Callback = function(value)
-        print("Input:", value)
+        print("Amount:", value)
     end,
+})
+
+Main:CreateDropdown({
+    Name = "Mode",
+    Options = {"Easy", "Normal", "Hard"},
+    CurrentOption = "Normal",
+    Callback = function(value)
+        print("Mode:", value)
+    end,
+})
+
+Window:Notify({
+    Title = "Ready",
+    Content = "Your interface has loaded.",
 })
 ```
 
-## Design principles
+## API overview
 
-- Built for normal Roblox Studio experiences and client-side interface code.
-- Modular source with readable Luau.
-- No hidden remote calls, executor dependencies, or automatic game manipulation.
-- Callbacks are supplied by the experience developer.
+- `Orbit:CreateWindow(options)`
+- `Window:CreateTab(name)`
+- `Window:Notify(options)`
+- `Window:Destroy()`
+- `Tab:Show()`
+- `Tab:CreateSection(name)`
+- `Tab:CreateButton(options)`
+- `Tab:CreateToggle(options)`
+- `Tab:CreateInput(options)`
+- `Tab:CreateSlider(options)`
+- `Tab:CreateDropdown(options)`
 
-## License
+Controls return small handles with methods such as `Get()` and `Set(value)` where applicable.
 
-MIT. See the repository license settings or add a LICENSE file before distributing.
+## Scope and compatibility
+
+This repository focuses on the interface layer and callbacks for authorized projects. It does not include game-specific remote actions, exploit features, protection bypasses, or executor integration. The included example targets a normal Roblox Studio LocalScript environment.
+
+The source has not yet been runtime-tested in Roblox Studio; validate it in a test place before using it in a published experience.
