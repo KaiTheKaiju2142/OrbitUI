@@ -40,6 +40,7 @@ end
 function Window.new(options)
     local self = setmetatable({}, Window)
     self.Tabs = {}
+    self.Connections = {}
     self.Flags = {}
     self.Config = options
     self.Initialized = false
@@ -169,7 +170,7 @@ function Window.new(options)
             dragInput = input
         end
     end)
-    UserInputService.InputChanged:Connect(function(input)
+    local dragConnection = UserInputService.InputChanged:Connect(function(input)
         if dragging and input == dragInput then
             local delta = input.Position - dragStart
             root.Position = UDim2.new(
@@ -178,6 +179,7 @@ function Window.new(options)
             )
         end
     end)
+    table.insert(self.Connections, dragConnection)
 
     return self
 end
@@ -251,6 +253,10 @@ function Window:Init()
 end
 
 function Window:Destroy()
+    for _, connection in ipairs(self.Connections or {}) do
+        if connection.Connected then connection:Disconnect() end
+    end
+    self.Connections = {}
     if self.Gui then
         self.Gui:Destroy()
         self.Gui = nil
