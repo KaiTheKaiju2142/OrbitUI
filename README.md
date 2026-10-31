@@ -1,108 +1,143 @@
 # OrbitUI
 
-OrbitUI is a modular, code-driven Roblox interface library for experiences you develop. It creates its GUI at runtime from Luau calls, with a dark default theme and a Rayfield-inspired developer experience.
+OrbitUI is a modular Luau interface library for Roblox experiences you own or are authorized to develop. Its public API follows the familiar Orion-style pattern documented in the supplied reference, with OrbitUI's own implementation and visuals.
 
-## Current status
+## Installation (Roblox Studio)
 
-**Early foundation (0.2.0).** Includes windows, draggable title bars, tabs, sections, buttons, toggles, text inputs, sliders, dropdowns, and notifications. The API and visuals are still evolving.
-
-## Source layout
-
-```
-OrbitUI/
-├── src/
-│   ├── OrbitUI.lua
-│   ├── Window.lua
-│   ├── Tab.lua
-│   └── Controls.lua
-├── examples/
-│   └── Example.client.lua
-└── README.md
-```
-
-## Roblox Studio installation
-
-1. In your experience, create a Folder named `OrbitUI` under `ReplicatedStorage`.
+1. Create a Folder named `OrbitUI` under `ReplicatedStorage`.
 2. Inside it, create a Folder named `src`.
-3. Create four ModuleScripts inside `src`: `OrbitUI`, `Window`, `Tab`, and `Controls`. Copy the matching source file contents into each ModuleScript.
-4. Put the example LocalScript in `StarterPlayerScripts`.
+3. Add ModuleScripts named `OrbitUI`, `Window`, `Tab`, and `Controls`, and paste the matching files from this repository.
+4. Run the example from a LocalScript in `StarterPlayerScripts`.
 
-The library creates the ScreenGui and all controls at runtime; you do not need to manually build the interface in Studio.
+OrbitUI creates its ScreenGui under the local player's `PlayerGui`; it does not depend on executor-only UI containers or privileged APIs.
 
 ## Quick start
 
 ```lua
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Orbit = require(ReplicatedStorage.OrbitUI.src.OrbitUI)
+local OrbitLib = require(ReplicatedStorage.OrbitUI.src.OrbitUI)
 
-local Window = Orbit:CreateWindow({
-    Name = "My Hub",
-    Subtitle = "Made with OrbitUI",
-    Width = 620,
-    Height = 440,
+local Window = OrbitLib:MakeWindow({
+    Name = "Orbit Hub",
+    HidePremium = true,
+    SaveConfig = false,
+    IntroEnabled = false,
+    CloseCallback = function()
+        print("Window closed")
+    end,
 })
 
-local Main = Window:CreateTab("Main")
+local Main = Window:MakeTab({
+    Name = "Main",
+    Icon = "",
+    PremiumOnly = false,
+})
 
-Main:CreateSection("Controls")
+local Section = Main:AddSection({Name = "General"})
 
-Main:CreateButton({
-    Name = "Run action",
+Main:AddButton({
+    Name = "Example button",
     Callback = function()
-        print("Button clicked")
+        print("Clicked")
     end,
 })
 
-Main:CreateToggle({
-    Name = "Enabled",
-    CurrentValue = false,
+local Toggle = Main:AddToggle({
+    Name = "Example toggle",
+    Default = false,
+    Flag = "example_toggle",
+    Save = false,
     Callback = function(value)
-        print("Enabled:", value)
+        print("Toggle:", value)
     end,
 })
 
-Main:CreateSlider({
+local Slider = Main:AddSlider({
     Name = "Amount",
-    Range = {0, 100},
-    CurrentValue = 25,
+    Min = 0,
+    Max = 100,
+    Default = 25,
+    Increment = 1,
+    ValueName = "units",
     Callback = function(value)
-        print("Amount:", value)
+        print("Slider:", value)
     end,
 })
 
-Main:CreateDropdown({
+local Dropdown = Main:AddDropdown({
     Name = "Mode",
+    Default = "Normal",
     Options = {"Easy", "Normal", "Hard"},
-    CurrentOption = "Normal",
     Callback = function(value)
         print("Mode:", value)
     end,
 })
 
-Window:Notify({
-    Title = "Ready",
-    Content = "Your interface has loaded.",
+Main:AddTextbox({
+    Name = "Search",
+    Default = "",
+    Callback = function(value)
+        print("Input:", value)
+    end,
 })
+
+Main:AddLabel("A simple label")
+Main:AddParagraph("About", "This is a paragraph description.")
+
+local Color = Main:AddColorpicker({
+    Name = "Accent color",
+    Default = Color3.fromRGB(120, 90, 255),
+    Callback = function(value)
+        print("Color:", value)
+    end,
+})
+
+local Bind = Main:AddBind({
+    Name = "Action key",
+    Default = Enum.KeyCode.E,
+    Hold = false,
+    Callback = function()
+        print("Key pressed")
+    end,
+})
+
+Toggle:Set(true)
+Slider:Set(50)
+Dropdown:Set("Hard")
+Color:Set(Color3.fromRGB(255, 80, 80))
+Bind:Set(Enum.KeyCode.Q)
+
+OrbitLib:MakeNotification({
+    Name = "OrbitUI",
+    Content = "Interface initialized",
+    Time = 4,
+})
+
+OrbitLib:Init()
 ```
 
-## API overview
+## API
 
-- `Orbit:CreateWindow(options)`
-- `Window:CreateTab(name)`
-- `Window:Notify(options)`
-- `Window:Destroy()`
-- `Tab:Show()`
-- `Tab:CreateSection(name)`
-- `Tab:CreateButton(options)`
-- `Tab:CreateToggle(options)`
-- `Tab:CreateInput(options)`
-- `Tab:CreateSlider(options)`
-- `Tab:CreateDropdown(options)`
+- `OrbitLib:MakeWindow(options)` (also `CreateWindow`)
+- `Window:MakeTab({Name, Icon, PremiumOnly})` (also `CreateTab(name)`)
+- `Tab:AddSection({Name})`
+- `Tab:AddButton({Name, Callback})`
+- `Tab:AddToggle({Name, Default, Callback, Flag, Save})`
+- `Tab:AddColorpicker({Name, Default, Callback, Flag, Save})`
+- `Tab:AddSlider({Name, Min, Max, Default, Increment, ValueName, Callback, Flag, Save})`
+- `Tab:AddLabel(text)`
+- `Tab:AddParagraph(title, content)`
+- `Tab:AddTextbox({Name, Default, TextDisappear, Callback})`
+- `Tab:AddBind({Name, Default, Hold, Callback, Flag, Save})`
+- `Tab:AddDropdown({Name, Default, Options, Callback, Flag, Save})`
+- `OrbitLib:MakeNotification({Name, Content, Time})`
+- `OrbitLib:Init()`
+- `OrbitLib:Destroy()`
 
-Controls return small handles with methods such as `Get()` and `Set(value)` where applicable.
+Toggle, slider, dropdown, bind, and color picker handles expose `:Set(value)`, `:Get()`, and a `Value` field. Dropdown handles also expose `:Refresh(options, deleteCurrent)`. Flagged controls are available through `OrbitLib.Flags["flag_name"]`.
 
-## Scope and compatibility
+## Compatibility notes
 
-This repository focuses on the interface layer and callbacks for authorized projects. It does not include game-specific remote actions, exploit features, protection bypasses, or executor integration. The included example targets a normal Roblox Studio LocalScript environment.
+The reference documents disk-backed config folders and executor-specific bootstrapping. This OrbitUI build does not copy those executor-only capabilities. `Save` and `Flag` currently register in-memory values only; disk config persistence is not implemented. The library is intended to be required from a LocalScript in a Roblox experience you control. It does not provide executor injection, privileged CoreGui placement, or game-manipulation features.
 
-The source has not yet been runtime-tested in Roblox Studio; validate it in a test place before using it in a published experience.
+The UI source has not been runtime-tested in Roblox Studio. Test it in a private development place before publishing.
