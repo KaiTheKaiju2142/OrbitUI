@@ -424,7 +424,7 @@ function Controls.CreateParagraph(tab, title, content)
 end
 
 function Controls.CreateColorpicker(tab, options)
-    local color = typeof(options.Default) == "Color3" and options.Default or Color3.fromRGB(120, 90, 255)
+    local color = typeof(options.Default) == "Color3" and options.Default or Color3.fromRGB(190, 190, 190)
     local row = createRow(tab, "Colorpicker")
     createLabel(tab, row, options.Name or "Color")
     local preview = make("TextButton", {
