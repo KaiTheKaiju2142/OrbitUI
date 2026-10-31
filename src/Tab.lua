@@ -221,4 +221,15 @@ function Tab:AddBind(options)
     return registerFlag(self, handle, options, "Bind")
 end
 
+-- Short aliases for the compact OrbitUI API.
+function Tab:CSN(config) return self:AddSection(config) end
+function Tab:CB(options) return self:AddButton(options) end
+function Tab:CT(options) return self:AddToggle(options) end
+function Tab:CS(options) return self:AddSlider(options) end
+function Tab:CD(options) return self:AddDropdown(options) end
+function Tab:CTX(options) return self:AddTextbox(options) end
+function Tab:CK(options) return self:AddBind(options) end
+function Tab:CL(text) return self:AddLabel(text) end
+function Tab:CP(title, content) return self:AddParagraph(title, content) end
+function Tab:CC(options) return self:AddColorpicker(options) end
 return Tab
