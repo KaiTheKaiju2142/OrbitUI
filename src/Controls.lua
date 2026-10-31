@@ -163,7 +163,9 @@ function Controls.CreateSlider(tab, options)
     if maximum <= minimum then
         maximum = minimum + 1
     end
+    local increment = math.max(tonumber(options.Increment) or 1, 0.000001)
     local value = math.clamp(tonumber(options.CurrentValue) or minimum, minimum, maximum)
+    value = math.clamp(minimum + math.floor(((value - minimum) / increment) + 0.5) * increment, minimum, maximum)
     local row = createRow(tab, "Slider", 58)
     createLabel(tab, row, options.Name or "Slider", 0.58)
 
@@ -173,7 +175,7 @@ function Controls.CreateSlider(tab, options)
         Size = UDim2.fromOffset(90, 18),
         BackgroundTransparency = 1,
         Font = Enum.Font.Gotham,
-        Text = tostring(value),
+        Text = tostring(value) .. (options.ValueName and (" " .. tostring(options.ValueName)) or ""),
         TextColor3 = tab.Window.Theme.Muted,
         TextSize = 11,
         TextXAlignment = Enum.TextXAlignment.Right,
@@ -197,13 +199,14 @@ function Controls.CreateSlider(tab, options)
 
     local function setValue(nextValue, fireCallback)
         value = math.clamp(tonumber(nextValue) or minimum, minimum, maximum)
+        value = math.clamp(minimum + math.floor(((value - minimum) / increment) + 0.5) * increment, minimum, maximum)
         local precision = tonumber(options.DecimalPlaces)
         if precision then
             local factor = 10 ^ math.clamp(precision, 0, 5)
             value = math.floor(value * factor + 0.5) / factor
         end
         fill.Size = UDim2.new((value - minimum) / (maximum - minimum), 0, 1, 0)
-        valueLabel.Text = tostring(value)
+        valueLabel.Text = tostring(value) .. (options.ValueName and (" " .. tostring(options.ValueName)) or "")
         if fireCallback and typeof(options.Callback) == "function" then
             options.Callback(value)
         end
@@ -292,7 +295,11 @@ function Controls.CreateDropdown(tab, options)
         end
     end
 
-    for index, option in ipairs(choices) do
+    local function rebuildOptions()
+        for _, child in ipairs(menu:GetChildren()) do
+            if child:IsA("TextButton") then child:Destroy() end
+        end
+        for index, option in ipairs(choices) do
         local optionButton = make("TextButton", {
             LayoutOrder = index,
             Size = UDim2.new(1, -8, 0, 28),
@@ -308,7 +315,10 @@ function Controls.CreateDropdown(tab, options)
         optionButton.Activated:Connect(function()
             choose(option)
         end)
+        end
+        layout.Parent = menu
     end
+    rebuildOptions()
 
     button.Activated:Connect(function()
         open = not open
@@ -327,6 +337,14 @@ function Controls.CreateDropdown(tab, options)
                 selected = option
                 button.Text = tostring(option) .. "  ▾"
             end
+        end,
+        Refresh = function(_, nextOptions, deleteCurrent)
+            choices = nextOptions or {}
+            if deleteCurrent and not table.find(choices, selected) then
+                selected = choices[1]
+            end
+            button.Text = tostring(selected or "Select...") .. "  ▾"
+            rebuildOptions()
         end,
     }
 end
