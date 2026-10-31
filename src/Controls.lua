@@ -228,16 +228,18 @@ function Controls.CreateSlider(tab, options)
             updateFromInput(input)
         end
     end)
-    UserInputService.InputChanged:Connect(function(input)
+    local changedConnection = UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             updateFromInput(input)
         end
     end)
-    UserInputService.InputEnded:Connect(function(input)
+    local endedConnection = UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
     end)
+    table.insert(tab.Window.Connections, changedConnection)
+    table.insert(tab.Window.Connections, endedConnection)
 
     return {
         Instance = row,
@@ -505,6 +507,8 @@ function Controls.CreateKeybind(tab, options)
             if typeof(options.Callback) == "function" then options.Callback(false) end
         end
     end)
+    table.insert(tab.Window.Connections, beganConnection)
+    table.insert(tab.Window.Connections, endedConnection)
     local handle = {Instance = row, Type = "Bind", Value = key}
     function handle:Set(nextKey)
         if typeof(nextKey) == "EnumItem" and nextKey.EnumType == Enum.KeyCode then
