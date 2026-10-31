@@ -1,0 +1,145 @@
+-- OrbitUI basic controls: Button, Toggle, Input
+
+local Controls = {}
+
+local function make(className, properties, parent)
+    local object = Instance.new(className)
+    for property, value in pairs(properties or {}) do
+        object[property] = value
+    end
+    object.Parent = parent
+    return object
+end
+
+local function createRow(tab, name)
+    local row = make("Frame", {
+        Name = name or "Control",
+        Size = UDim2.new(1, 0, 0, 46),
+        BackgroundColor3 = tab.Window.Theme.Background,
+        BorderSizePixel = 0,
+    }, tab.Page)
+    make("UICorner", { CornerRadius = UDim.new(0, 7) }, row)
+    make("UIStroke", { Color = tab.Window.Theme.Border, Thickness = 1 }, row)
+    return row
+end
+
+local function createLabel(tab, parent, text)
+    return make("TextLabel", {
+        Position = UDim2.fromOffset(12, 0),
+        Size = UDim2.new(0.55, -12, 1, 0),
+        BackgroundTransparency = 1,
+        Font = Enum.Font.GothamMedium,
+        Text = text or "Control",
+        TextColor3 = tab.Window.Theme.Text,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    }, parent)
+end
+
+function Controls.CreateButton(tab, options)
+    local row = createRow(tab, "Button")
+    createLabel(tab, row, options.Name or "Button")
+
+    local button = make("TextButton", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -9, 0.5, 0),
+        Size = UDim2.fromOffset(112, 30),
+        BackgroundColor3 = tab.Window.Theme.Accent,
+        BorderSizePixel = 0,
+        AutoButtonColor = true,
+        Font = Enum.Font.GothamSemibold,
+        Text = options.ButtonText or "Run",
+        TextColor3 = Color3.new(1, 1, 1),
+        TextSize = 11,
+    }, row)
+    make("UICorner", { CornerRadius = UDim.new(0, 6) }, button)
+
+    button.Activated:Connect(function()
+        if typeof(options.Callback) == "function" then
+            options.Callback()
+        end
+    end)
+
+    return { Instance = row, Button = button }
+end
+
+function Controls.CreateToggle(tab, options)
+    local row = createRow(tab, "Toggle")
+    createLabel(tab, row, options.Name or "Toggle")
+
+    local enabled = options.CurrentValue == true
+    local button = make("TextButton", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -9, 0.5, 0),
+        Size = UDim2.fromOffset(42, 24),
+        BackgroundColor3 = enabled and tab.Window.Theme.Accent or tab.Window.Theme.SurfaceLight,
+        BorderSizePixel = 0,
+        Text = "",
+        AutoButtonColor = false,
+    }, row)
+    make("UICorner", { CornerRadius = UDim.new(1, 0) }, button)
+
+    local knob = make("Frame", {
+        AnchorPoint = Vector2.new(0, 0.5),
+        Position = enabled and UDim2.new(1, -21, 0.5, 0) or UDim2.fromOffset(3, 0),
+        Size = UDim2.fromOffset(18, 18),
+        BackgroundColor3 = Color3.new(1, 1, 1),
+        BorderSizePixel = 0,
+    }, button)
+    make("UICorner", { CornerRadius = UDim.new(1, 0) }, knob)
+
+    local function setValue(value, fireCallback)
+        enabled = value == true
+        button.BackgroundColor3 = enabled and tab.Window.Theme.Accent or tab.Window.Theme.SurfaceLight
+        knob.Position = enabled and UDim2.new(1, -21, 0.5, 0) or UDim2.fromOffset(3, 0)
+        if fireCallback and typeof(options.Callback) == "function" then
+            options.Callback(enabled)
+        end
+    end
+
+    button.Activated:Connect(function()
+        setValue(not enabled, true)
+    end)
+
+    return {
+        Instance = row,
+        Set = function(_, value) setValue(value, false) end,
+        Get = function() return enabled end,
+    }
+end
+
+function Controls.CreateInput(tab, options)
+    local row = createRow(tab, "Input")
+    createLabel(tab, row, options.Name or "Input")
+
+    local input = make("TextBox", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -9, 0.5, 0),
+        Size = UDim2.new(0.45, -8, 0, 30),
+        BackgroundColor3 = tab.Window.Theme.SurfaceLight,
+        BorderSizePixel = 0,
+        ClearTextOnFocus = false,
+        Font = Enum.Font.Gotham,
+        PlaceholderText = options.PlaceholderText or "Type here...",
+        PlaceholderColor3 = tab.Window.Theme.Muted,
+        Text = options.Default or "",
+        TextColor3 = tab.Window.Theme.Text,
+        TextSize = 11,
+    }, row)
+    make("UICorner", { CornerRadius = UDim.new(0, 6) }, input)
+
+    input.FocusLost:Connect(function(enterPressed)
+        if typeof(options.Callback) == "function" then
+            options.Callback(input.Text, enterPressed)
+        end
+    end)
+
+    return {
+        Instance = row,
+        Input = input,
+        Get = function() return input.Text end,
+        Set = function(_, value) input.Text = tostring(value or "") end,
+    }
+end
+
+return Controls
