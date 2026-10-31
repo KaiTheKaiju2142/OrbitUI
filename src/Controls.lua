@@ -117,7 +117,7 @@ function Controls.CreateToggle(tab, options)
 
     return {
         Instance = row,
-        Set = function(_, value) setValue(value, false) end,
+        Set = function(_, value) setValue(value, true) end,
         Value = enabled,
         Get = function() return enabled end,
     }
@@ -243,7 +243,7 @@ function Controls.CreateSlider(tab, options)
         Instance = row,
         Value = value,
         Get = function() return value end,
-        Set = function(_, nextValue) setValue(nextValue, false) end,
+        Set = function(_, nextValue) setValue(nextValue, true) end,
     }
 end
 
@@ -336,6 +336,7 @@ function Controls.CreateDropdown(tab, options)
             if table.find(choices, option) then
                 selected = option
                 button.Text = tostring(option) .. "  ▾"
+                if typeof(options.Callback) == "function" then options.Callback(option) end
             end
         end,
         Refresh = function(_, nextOptions, deleteCurrent)
@@ -438,6 +439,7 @@ function Controls.CreateColorpicker(tab, options)
             color = nextColor
             handle.Value = color
             preview.BackgroundColor3 = color
+            if typeof(options.Callback) == "function" then options.Callback(color) end
         end
     end
     function handle:Get()
@@ -450,7 +452,6 @@ function Controls.CreateColorpicker(tab, options)
             local g = tonumber(hex:sub(3, 4), 16)
             local b = tonumber(hex:sub(5, 6), 16)
             handle:Set(Color3.fromRGB(r, g, b))
-            if typeof(options.Callback) == "function" then options.Callback(color) end
         end
     end)
     preview.Activated:Connect(function()
