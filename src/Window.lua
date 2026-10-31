@@ -40,6 +40,9 @@ end
 function Window.new(options)
     local self = setmetatable({}, Window)
     self.Tabs = {}
+    self.Flags = {}
+    self.Config = options
+    self.Initialized = false
     self.Theme = resolveTheme(options.Theme)
 
     local player = game:GetService("Players").LocalPlayer
@@ -112,6 +115,9 @@ function Window.new(options)
     }, top)
     make("UICorner", { CornerRadius = UDim.new(0, 6) }, close)
     close.Activated:Connect(function()
+        if typeof(options.CloseCallback) == "function" then
+            options.CloseCallback()
+        end
         self:Destroy()
     end)
 
@@ -185,6 +191,11 @@ function Window:CreateTab(name)
     return tab
 end
 
+function Window:MakeTab(config)
+    config = config or {}
+    return self:CreateTab(config.Name or "Tab")
+end
+
 function Window:Notify(options)
     options = options or {}
     local toast = make("Frame", {
@@ -228,6 +239,15 @@ function Window:Notify(options)
         end
     end)
     return toast
+end
+
+function Window:MakeNotification(options)
+    return self:Notify(options)
+end
+
+function Window:Init()
+    self.Initialized = true
+    return self
 end
 
 function Window:Destroy()
