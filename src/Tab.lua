@@ -75,6 +75,10 @@ function Tab:Show()
     self.Button.TextColor3 = self.Window.Theme.Text
 end
 
+function Tab:CreateSection(name)
+    return Controls.CreateSection(self, name)
+end
+
 function Tab:CreateButton(options)
     return Controls.CreateButton(self, options or {})
 end
@@ -85,6 +89,14 @@ end
 
 function Tab:CreateInput(options)
     return Controls.CreateInput(self, options or {})
+end
+
+function Tab:CreateSlider(options)
+    return Controls.CreateSlider(self, options or {})
+end
+
+function Tab:CreateDropdown(options)
+    return Controls.CreateDropdown(self, options or {})
 end
 
 return Tab
