@@ -123,10 +123,14 @@ end
 
 function Tab:AddToggle(options)
     options = options or {}
-    local handle = self:CreateToggle({
+    local handle
+    handle = self:CreateToggle({
         Name = options.Name,
         CurrentValue = options.Default,
-        Callback = options.Callback,
+        Callback = function(value)
+            if handle then handle.Value = value end
+            if typeof(options.Callback) == "function" then options.Callback(value) end
+        end,
     })
     handle.Value = handle:Get()
     local originalSet = handle.Set
@@ -139,14 +143,18 @@ end
 
 function Tab:AddSlider(options)
     options = options or {}
-    local handle = self:CreateSlider({
+    local handle
+    handle = self:CreateSlider({
         Name = options.Name,
         Range = {options.Min or 0, options.Max or 100},
         CurrentValue = options.Default,
         Increment = options.Increment,
         ValueName = options.ValueName,
         DecimalPlaces = options.DecimalPlaces,
-        Callback = options.Callback,
+        Callback = function(value)
+            if handle then handle.Value = value end
+            if typeof(options.Callback) == "function" then options.Callback(value) end
+        end,
     })
     handle.Value = handle:Get()
     local originalSet = handle.Set
@@ -159,11 +167,15 @@ end
 
 function Tab:AddDropdown(options)
     options = options or {}
-    local handle = self:CreateDropdown({
+    local handle
+    handle = self:CreateDropdown({
         Name = options.Name,
         Options = options.Options,
         CurrentOption = options.Default,
-        Callback = options.Callback,
+        Callback = function(value)
+            if handle then handle.Value = value end
+            if typeof(options.Callback) == "function" then options.Callback(value) end
+        end,
     })
     handle.Value = handle:Get()
     local originalSet = handle.Set
@@ -171,8 +183,10 @@ function Tab:AddDropdown(options)
         originalSet(handle, value)
         handle.Value = handle:Get()
     end
+    local originalRefresh = handle.Refresh
     handle.Refresh = function(_, values, deleteCurrent)
-        handle:Refresh(values, deleteCurrent)
+        originalRefresh(handle, values, deleteCurrent)
+        handle.Value = handle:Get()
     end
     return registerFlag(self, handle, options, "Dropdown")
 end
