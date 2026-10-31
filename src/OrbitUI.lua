@@ -1,13 +1,14 @@
 -- OrbitUI public entry point
--- Place this ModuleScript beside Window.lua, Tab.lua, and Controls.lua.
+-- This is a ModuleScript entry point for an authorized Roblox experience.
 
 local Window = require(script.Parent.Window)
 
 local OrbitUI = {}
+OrbitUI.Version = "0.2.0"
 
-OrbitUI.Version = "0.1.0"
-
-function OrbitUI.CreateWindow(options)
+-- Supports both OrbitUI:CreateWindow({...}) and OrbitUI.CreateWindow({...}).
+function OrbitUI.CreateWindow(selfOrOptions, maybeOptions)
+    local options = selfOrOptions == OrbitUI and maybeOptions or selfOrOptions
     return Window.new(options or {})
 end
 
