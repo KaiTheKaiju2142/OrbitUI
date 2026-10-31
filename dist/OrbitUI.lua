@@ -428,7 +428,7 @@ function Controls.CreateParagraph(tab, title, content)
 end
 
 function Controls.CreateColorpicker(tab, options)
-    local color = typeof(options.Default) == "Color3" and options.Default or Color3.fromRGB(120, 90, 255)
+    local color = typeof(options.Default) == "Color3" and options.Default or Color3.fromRGB(190, 190, 190)
     local row = createRow(tab, "Colorpicker")
     createLabel(tab, row, options.Name or "Color")
     local preview = make("TextButton", {
@@ -546,6 +546,8 @@ function Controls.CreateKeybind(tab, options)
     end
     return handle
 end
+
+return Controls
 
     return Controls
 
@@ -790,6 +792,7 @@ function Tab:CK(options) return self:AddBind(options) end
 function Tab:CL(text) return self:AddLabel(text) end
 function Tab:CP(title, content) return self:AddParagraph(title, content) end
 function Tab:CC(options) return self:AddColorpicker(options) end
+return Tab
 
     return Tab
 
@@ -1069,6 +1072,8 @@ function Window:Destroy()
     end
 end
 
+return Window
+
     return Window
 
 end
@@ -1125,6 +1130,8 @@ OrbitUI.MakeWindow = function(selfOrOptions, maybeOptions)
     return window
 end
 OrbitUI.CreateWindow = OrbitUI.MakeWindow
+
+return OrbitUI
 
     return OrbitUI
 
