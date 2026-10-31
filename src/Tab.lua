@@ -143,6 +143,8 @@ function Tab:AddSlider(options)
         Name = options.Name,
         Range = {options.Min or 0, options.Max or 100},
         CurrentValue = options.Default,
+        Increment = options.Increment,
+        ValueName = options.ValueName,
         DecimalPlaces = options.DecimalPlaces,
         Callback = options.Callback,
     })
@@ -170,10 +172,7 @@ function Tab:AddDropdown(options)
         handle.Value = handle:Get()
     end
     handle.Refresh = function(_, values, deleteCurrent)
-        if deleteCurrent then
-            handle.Set(handle, values and values[1])
-        end
-        handle.Options = values or {}
+        handle:Refresh(values, deleteCurrent)
     end
     return registerFlag(self, handle, options, "Dropdown")
 end
