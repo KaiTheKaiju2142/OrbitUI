@@ -349,4 +349,178 @@ function Controls.CreateDropdown(tab, options)
     }
 end
 
+
+function Controls.CreateLabel(tab, text)
+    local label = make("TextLabel", {
+        Name = "Label",
+        Size = UDim2.new(1, 0, 0, 28),
+        BackgroundTransparency = 1,
+        Font = Enum.Font.GothamMedium,
+        Text = tostring(text or "Label"),
+        TextColor3 = tab.Window.Theme.Text,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    }, tab.Page)
+    return {
+        Instance = label,
+        Set = function(_, value) label.Text = tostring(value or "") end,
+        Get = function() return label.Text end,
+    }
+end
+
+function Controls.CreateParagraph(tab, title, content)
+    local row = createRow(tab, "Paragraph", 68)
+    local heading = make("TextLabel", {
+        Position = UDim2.fromOffset(12, 7),
+        Size = UDim2.new(1, -24, 0, 18),
+        BackgroundTransparency = 1,
+        Font = Enum.Font.GothamBold,
+        Text = tostring(title or "Paragraph"),
+        TextColor3 = tab.Window.Theme.Text,
+        TextSize = 12,
+        TextXAlignment = Enum.TextXAlignment.Left,
+    }, row)
+    local body = make("TextLabel", {
+        Position = UDim2.fromOffset(12, 27),
+        Size = UDim2.new(1, -24, 0, 34),
+        BackgroundTransparency = 1,
+        Font = Enum.Font.Gotham,
+        Text = tostring(content or ""),
+        TextColor3 = tab.Window.Theme.Muted,
+        TextSize = 11,
+        TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextYAlignment = Enum.TextYAlignment.Top,
+    }, row)
+    return {
+        Instance = row,
+        Set = function(_, newTitle, newContent)
+            if newContent == nil then
+                body.Text = tostring(newTitle or "")
+            else
+                heading.Text = tostring(newTitle or "")
+                body.Text = tostring(newContent or "")
+            end
+        end,
+    }
+end
+
+function Controls.CreateColorpicker(tab, options)
+    local color = typeof(options.Default) == "Color3" and options.Default or Color3.fromRGB(120, 90, 255)
+    local row = createRow(tab, "Colorpicker")
+    createLabel(tab, row, options.Name or "Color")
+    local preview = make("TextButton", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -9, 0.5, 0),
+        Size = UDim2.fromOffset(86, 28),
+        BackgroundColor3 = color,
+        BorderSizePixel = 0,
+        Text = "",
+        AutoButtonColor = false,
+    }, row)
+    make("UICorner", {CornerRadius = UDim.new(0, 6)}, preview)
+    local editor = make("TextBox", {
+        Position = UDim2.new(1, -190, 0.5, -14),
+        Size = UDim2.fromOffset(94, 28),
+        BackgroundColor3 = tab.Window.Theme.SurfaceLight,
+        BorderSizePixel = 0,
+        ClearTextOnFocus = false,
+        Font = Enum.Font.Gotham,
+        PlaceholderText = "#RRGGBB",
+        Text = "",
+        TextColor3 = tab.Window.Theme.Text,
+        TextSize = 11,
+    }, row)
+    make("UICorner", {CornerRadius = UDim.new(0, 6)}, editor)
+    local handle = {Instance = row, Value = color}
+    function handle:Set(nextColor)
+        if typeof(nextColor) == "Color3" then
+            color = nextColor
+            handle.Value = color
+            preview.BackgroundColor3 = color
+        end
+    end
+    function handle:Get()
+        return color
+    end
+    editor.FocusLost:Connect(function()
+        local hex = editor.Text:gsub("#", "")
+        if #hex == 6 and hex:match("^%x+$") then
+            local r = tonumber(hex:sub(1, 2), 16)
+            local g = tonumber(hex:sub(3, 4), 16)
+            local b = tonumber(hex:sub(5, 6), 16)
+            handle:Set(Color3.fromRGB(r, g, b))
+            if typeof(options.Callback) == "function" then options.Callback(color) end
+        end
+    end)
+    preview.Activated:Connect(function()
+        editor:CaptureFocus()
+    end)
+    return handle
+end
+
+function Controls.CreateKeybind(tab, options)
+    local key = options.Default or Enum.KeyCode.E
+    local row = createRow(tab, "Keybind")
+    createLabel(tab, row, options.Name or "Keybind")
+    local button = make("TextButton", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -9, 0.5, 0),
+        Size = UDim2.fromOffset(112, 28),
+        BackgroundColor3 = tab.Window.Theme.SurfaceLight,
+        BorderSizePixel = 0,
+        Font = Enum.Font.Gotham,
+        Text = key.Name,
+        TextColor3 = tab.Window.Theme.Text,
+        TextSize = 11,
+    }, row)
+    make("UICorner", {CornerRadius = UDim.new(0, 6)}, button)
+    local listening = false
+    button.Activated:Connect(function()
+        listening = true
+        button.Text = "Press a key..."
+    end)
+    local userInput = game:GetService("UserInputService")
+    local isHeld = false
+    local beganConnection = userInput.InputBegan:Connect(function(input, processed)
+        if listening then
+            if input.KeyCode ~= Enum.KeyCode.Unknown then
+                key = input.KeyCode
+                button.Text = key.Name
+                listening = false
+            end
+        elseif not processed and input.KeyCode == key then
+            if options.Hold == true then
+                isHeld = true
+                if typeof(options.Callback) == "function" then options.Callback(true) end
+            elseif typeof(options.Callback) == "function" then
+                options.Callback()
+            end
+        end
+    end)
+    local endedConnection = userInput.InputEnded:Connect(function(input)
+        if options.Hold == true and input.KeyCode == key and isHeld then
+            isHeld = false
+            if typeof(options.Callback) == "function" then options.Callback(false) end
+        end
+    end)
+    local handle = {Instance = row, Type = "Bind", Value = key}
+    function handle:Set(nextKey)
+        if typeof(nextKey) == "EnumItem" and nextKey.EnumType == Enum.KeyCode then
+            key = nextKey
+            handle.Value = key
+            button.Text = key.Name
+        end
+    end
+    function handle:Get()
+        return key
+    end
+    function handle:Destroy()
+        beganConnection:Disconnect()
+        endedConnection:Disconnect()
+        row:Destroy()
+    end
+    return handle
+end
+
 return Controls
