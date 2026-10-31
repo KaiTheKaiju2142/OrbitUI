@@ -31,7 +31,8 @@ function Tab.new(window, name)
         TextColor3 = window.Theme.Muted,
         TextSize = 12,
     }, window.Sidebar)
-    make("UICorner", { CornerRadius = UDim.new(0, 6) }, button)
+    make("UICorner", { CornerRadius = UDim.new(0, 7) }, button)
+    make("UIStroke", { Color = Color3.fromRGB(32, 32, 32), Thickness = 1, Transparency = 0.45 }, button)
     self.Button = button
 
     local page = make("ScrollingFrame", {
@@ -71,7 +72,7 @@ function Tab:Show()
     end
     self.Page.Visible = true
     self.Button.BackgroundTransparency = 0
-    self.Button.BackgroundColor3 = self.Window.Theme.SurfaceLight
+    self.Button.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
     self.Button.TextColor3 = self.Window.Theme.Text
 end
 
