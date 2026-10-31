@@ -1,69 +1,66 @@
--- Example LocalScript for an experience you own.
--- Install the OrbitUI ModuleScripts as described in README.md.
-
+-- OrbitUI example LocalScript for a Roblox experience you own.
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Orbit = require(ReplicatedStorage.OrbitUI.src.OrbitUI)
+local OrbitLib = require(ReplicatedStorage.OrbitUI.src.OrbitUI)
 
-local Window = Orbit:CreateWindow({
+local Window = OrbitLib:MakeWindow({
     Name = "OrbitUI",
-    LoadingTitle = "OrbitUI",
-    Subtitle = "Developer interface demo",
-    Width = 620,
-    Height = 440,
+    HidePremium = true,
+    IntroEnabled = false,
 })
 
-Window:Notify({
-    Title = "OrbitUI loaded",
-    Content = "The interface is ready.",
-    Duration = 4,
-})
+local Main = Window:MakeTab({Name = "Main"})
+Main:AddSection({Name = "Controls"})
 
-local Main = Window:CreateTab("Main")
-
-Main:CreateSection("Basic controls")
-
-Main:CreateButton({
-    Name = "Example action",
-    ButtonText = "Click",
+Main:AddButton({
+    Name = "Notify",
     Callback = function()
-        Window:Notify({
-            Title = "Button clicked",
-            Content = "Your callback ran successfully.",
+        OrbitLib:MakeNotification({
+            Name = "Hello",
+            Content = "Your callback is running.",
+            Time = 3,
         })
     end,
 })
 
-Main:CreateToggle({
-    Name = "Example setting",
-    CurrentValue = false,
-    Callback = function(enabled)
-        print("Example setting:", enabled)
+Main:AddToggle({
+    Name = "Demo toggle",
+    Default = false,
+    Flag = "demo_toggle",
+    Callback = function(value)
+        print("Demo toggle:", value)
     end,
 })
 
-Main:CreateInput({
-    Name = "Username",
-    PlaceholderText = "Enter a username",
-    Callback = function(value, enterPressed)
-        print("Entered:", value, "Submitted:", enterPressed)
-    end,
-})
-
-Main:CreateSlider({
+Main:AddSlider({
     Name = "Volume",
-    Range = {0, 100},
-    CurrentValue = 35,
-    DecimalPlaces = 0,
+    Min = 0,
+    Max = 100,
+    Default = 35,
+    Increment = 5,
+    ValueName = "%",
     Callback = function(value)
         print("Volume:", value)
     end,
 })
 
-Main:CreateDropdown({
+Main:AddDropdown({
     Name = "Quality",
     Options = {"Low", "Medium", "High"},
-    CurrentOption = "Medium",
-    Callback = function(option)
-        print("Quality:", option)
+    Default = "Medium",
+    Callback = function(value)
+        print("Quality:", value)
     end,
 })
+
+Main:AddTextbox({
+    Name = "Username",
+    Default = "",
+    Callback = function(value)
+        print("Username:", value)
+    end,
+})
+
+Main:AddLabel("OrbitUI label")
+Main:AddParagraph("About", "An Orion-style API with OrbitUI implementation.")
+
+OrbitLib:Init()
