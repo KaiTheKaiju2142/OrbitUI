@@ -9,9 +9,9 @@ local Window = OrbitLib:MakeWindow({
 })
 
 local Main = Window:MakeTab({Name = "Main"})
-Main:AddSection({Name = "Controls"})
+Main:CSN({Name = "Controls"})
 
-Main:AddButton({
+Main:CB({
     Name = "Notify",
     Callback = function()
         OrbitLib:MakeNotification({
@@ -22,7 +22,7 @@ Main:AddButton({
     end,
 })
 
-Main:AddToggle({
+Main:CT({
     Name = "Demo toggle",
     Default = false,
     Flag = "demo_toggle",
@@ -31,7 +31,7 @@ Main:AddToggle({
     end,
 })
 
-Main:AddSlider({
+Main:CS({
     Name = "Volume",
     Min = 0,
     Max = 100,
@@ -43,7 +43,7 @@ Main:AddSlider({
     end,
 })
 
-Main:AddDropdown({
+Main:CD({
     Name = "Quality",
     Options = {"Low", "Medium", "High"},
     Default = "Medium",
@@ -52,7 +52,7 @@ Main:AddDropdown({
     end,
 })
 
-Main:AddTextbox({
+Main:CTX({
     Name = "Username",
     Default = "",
     Callback = function(value)
@@ -60,7 +60,7 @@ Main:AddTextbox({
     end,
 })
 
-Main:AddLabel("OrbitUI label")
-Main:AddParagraph("About", "An Orion-style API with OrbitUI implementation.")
+Main:CL("OrbitUI label")
+Main:CP("About", "An Orion-style API with OrbitUI implementation.")
 
 OrbitLib:Init()
