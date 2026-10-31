@@ -18,8 +18,9 @@ local function createRow(tab, name, height)
         BackgroundColor3 = tab.Window.Theme.Background,
         BorderSizePixel = 0,
     }, tab.Page)
-    make("UICorner", { CornerRadius = UDim.new(0, 7) }, row)
-    make("UIStroke", { Color = tab.Window.Theme.Border, Thickness = 1 }, row)
+    make("UICorner", { CornerRadius = UDim.new(0, 8) }, row)
+    make("UIStroke", { Color = tab.Window.Theme.Border, Thickness = 1, Transparency = 0.18 }, row)
+    make("UIGradient", { Color = ColorSequence.new(Color3.fromRGB(13, 13, 13), Color3.fromRGB(3, 3, 3)), Rotation = 90 }, row)
     return row
 end
 
@@ -81,31 +82,45 @@ function Controls.CreateToggle(tab, options)
     local row = createRow(tab, "Toggle")
     createLabel(tab, row, options.Name or "Toggle")
 
+    local TweenService = game:GetService("TweenService")
     local enabled = options.CurrentValue == true
     local button = make("TextButton", {
         AnchorPoint = Vector2.new(1, 0.5),
-        Position = UDim2.new(1, -9, 0.5, 0),
-        Size = UDim2.fromOffset(42, 24),
-        BackgroundColor3 = enabled and tab.Window.Theme.Accent or tab.Window.Theme.SurfaceLight,
+        Position = UDim2.new(1, -13, 0.5, 0),
+        Size = UDim2.fromOffset(44, 22),
+        BackgroundColor3 = enabled and Color3.fromRGB(205, 205, 205) or Color3.fromRGB(23, 23, 23),
         BorderSizePixel = 0,
         Text = "",
         AutoButtonColor = false,
     }, row)
     make("UICorner", { CornerRadius = UDim.new(1, 0) }, button)
+    make("UIStroke", { Color = Color3.fromRGB(58, 58, 58), Thickness = 1, Transparency = 0.2 }, button)
+    make("UIGradient", { Color = ColorSequence.new(enabled and Color3.fromRGB(245, 245, 245) or Color3.fromRGB(35, 35, 35), enabled and Color3.fromRGB(150, 150, 150) or Color3.fromRGB(9, 9, 9)), Rotation = 90 }, button)
 
     local knob = make("Frame", {
+        Name = "Knob",
         AnchorPoint = Vector2.new(0, 0.5),
-        Position = enabled and UDim2.new(1, -21, 0.5, 0) or UDim2.fromOffset(3, 0),
+        Position = enabled and UDim2.new(1, -19, 0.5, 0) or UDim2.new(0, -3, 0.5, 0),
         Size = UDim2.fromOffset(18, 18),
-        BackgroundColor3 = Color3.new(1, 1, 1),
+        BackgroundColor3 = Color3.fromRGB(248, 248, 248),
         BorderSizePixel = 0,
+        ZIndex = 2,
     }, button)
     make("UICorner", { CornerRadius = UDim.new(1, 0) }, knob)
+    make("UIStroke", { Color = Color3.fromRGB(175, 175, 175), Thickness = 1, Transparency = 0.12 }, knob)
+    make("UIGradient", { Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(190, 190, 190)), Rotation = 90 }, knob)
 
     local function setValue(value, fireCallback)
         enabled = value == true
-        button.BackgroundColor3 = enabled and tab.Window.Theme.Accent or tab.Window.Theme.SurfaceLight
-        knob.Position = enabled and UDim2.new(1, -21, 0.5, 0) or UDim2.fromOffset(3, 0)
+        local trackColor = enabled and Color3.fromRGB(205, 205, 205) or Color3.fromRGB(23, 23, 23)
+        local gradient = button:FindFirstChildOfClass("UIGradient")
+        if gradient then
+            gradient.Color = ColorSequence.new(enabled and Color3.fromRGB(245, 245, 245) or Color3.fromRGB(35, 35, 35), enabled and Color3.fromRGB(150, 150, 150) or Color3.fromRGB(9, 9, 9))
+        end
+        TweenService:Create(button, TweenInfo.new(0.16, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {BackgroundColor3 = trackColor}):Play()
+        TweenService:Create(knob, TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+            Position = enabled and UDim2.new(1, -19, 0.5, 0) or UDim2.new(0, -3, 0.5, 0)
+        }):Play()
         if fireCallback and typeof(options.Callback) == "function" then
             options.Callback(enabled)
         end
