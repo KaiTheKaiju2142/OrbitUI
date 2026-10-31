@@ -118,6 +118,7 @@ function Controls.CreateToggle(tab, options)
     return {
         Instance = row,
         Set = function(_, value) setValue(value, false) end,
+        Value = enabled,
         Get = function() return enabled end,
     }
 end
@@ -237,6 +238,7 @@ function Controls.CreateSlider(tab, options)
 
     return {
         Instance = row,
+        Value = value,
         Get = function() return value end,
         Set = function(_, nextValue) setValue(nextValue, false) end,
     }
@@ -318,6 +320,7 @@ function Controls.CreateDropdown(tab, options)
 
     return {
         Instance = row,
+        Value = selected,
         Get = function() return selected end,
         Set = function(_, option)
             if table.find(choices, option) then
