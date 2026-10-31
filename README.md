@@ -33,16 +33,16 @@ local Main = Window:MakeTab({
     PremiumOnly = false,
 })
 
-local Section = Main:AddSection({Name = "General"})
+local Section = Main:CSN({Name = "General"})
 
-Main:AddButton({
+Main:CB({
     Name = "Example button",
     Callback = function()
         print("Clicked")
     end,
 })
 
-local Toggle = Main:AddToggle({
+local Toggle = Main:CT({
     Name = "Example toggle",
     Default = false,
     Flag = "example_toggle",
@@ -52,7 +52,7 @@ local Toggle = Main:AddToggle({
     end,
 })
 
-local Slider = Main:AddSlider({
+local Slider = Main:CS({
     Name = "Amount",
     Min = 0,
     Max = 100,
@@ -64,7 +64,7 @@ local Slider = Main:AddSlider({
     end,
 })
 
-local Dropdown = Main:AddDropdown({
+local Dropdown = Main:CD({
     Name = "Mode",
     Default = "Normal",
     Options = {"Easy", "Normal", "Hard"},
@@ -73,7 +73,7 @@ local Dropdown = Main:AddDropdown({
     end,
 })
 
-Main:AddTextbox({
+Main:CTX({
     Name = "Search",
     Default = "",
     Callback = function(value)
@@ -81,10 +81,10 @@ Main:AddTextbox({
     end,
 })
 
-Main:AddLabel("A simple label")
-Main:AddParagraph("About", "This is a paragraph description.")
+Main:CL("A simple label")
+Main:CP("About", "This is a paragraph description.")
 
-local Color = Main:AddColorpicker({
+local Color = Main:CC({
     Name = "Accent color",
     Default = Color3.fromRGB(120, 90, 255),
     Callback = function(value)
@@ -92,7 +92,7 @@ local Color = Main:AddColorpicker({
     end,
 })
 
-local Bind = Main:AddBind({
+local Bind = Main:CK({
     Name = "Action key",
     Default = Enum.KeyCode.E,
     Hold = false,
@@ -120,19 +120,21 @@ OrbitLib:Init()
 
 - `OrbitLib:MakeWindow(options)` (also `CreateWindow`)
 - `Window:MakeTab({Name, Icon, PremiumOnly})` (also `CreateTab(name)`)
-- `Tab:AddSection({Name})`
-- `Tab:AddButton({Name, Callback})`
-- `Tab:AddToggle({Name, Default, Callback, Flag, Save})`
-- `Tab:AddColorpicker({Name, Default, Callback, Flag, Save})`
-- `Tab:AddSlider({Name, Min, Max, Default, Increment, ValueName, Callback, Flag, Save})`
-- `Tab:AddLabel(text)`
-- `Tab:AddParagraph(title, content)`
-- `Tab:AddTextbox({Name, Default, TextDisappear, Callback})`
-- `Tab:AddBind({Name, Default, Hold, Callback, Flag, Save})`
-- `Tab:AddDropdown({Name, Default, Options, Callback, Flag, Save})`
+- `Tab:CSN({Name})` — section
+- `Tab:CB({Name, Callback})` — button
+- `Tab:CT({Name, Default, Callback, Flag, Save})` — toggle
+- `Tab:CS({Name, Min, Max, Default, Increment, ValueName, Callback, Flag, Save})` — slider
+- `Tab:CD({Name, Default, Options, Callback, Flag, Save})` — dropdown
+- `Tab:CTX({Name, Default, PlaceholderText, Callback})` — textbox
+- `Tab:CK({Name, Default, Hold, Callback, Flag, Save})` — keybind
+- `Tab:CL(text)` — label
+- `Tab:CP(title, content)` — paragraph
+- `Tab:CC({Name, Default, Callback, Flag, Save})` — colorpicker
 - `OrbitLib:MakeNotification({Name, Content, Time})`
 - `OrbitLib:Init()`
 - `OrbitLib:Destroy()`
+
+The original `Add...` methods remain available as compatibility aliases (for example, `AddTextbox` and `AddSection`).
 
 Toggle, slider, dropdown, bind, and color picker handles expose `:Set(value)`, `:Get()`, and a `Value` field. Dropdown handles also expose `:Refresh(options, deleteCurrent)`. Flagged controls are available through `OrbitLib.Flags["flag_name"]`.
 
