@@ -233,7 +233,7 @@ function Window:Notify(options)
         TextYAlignment = Enum.TextYAlignment.Top,
         ZIndex = 21,
     }, toast)
-    task.delay(tonumber(options.Duration) or 4, function()
+    task.delay(tonumber(options.Duration or options.Time) or 4, function()
         if toast.Parent then
             toast:Destroy()
         end
