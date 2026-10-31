@@ -6,13 +6,13 @@ local Window = {}
 Window.__index = Window
 
 local DEFAULT_THEME = {
-    Background = Color3.fromRGB(15, 15, 18),
-    Surface = Color3.fromRGB(23, 23, 28),
-    SurfaceLight = Color3.fromRGB(32, 32, 39),
-    Text = Color3.fromRGB(242, 242, 247),
-    Muted = Color3.fromRGB(155, 155, 168),
-    Accent = Color3.fromRGB(120, 90, 255),
-    Border = Color3.fromRGB(48, 48, 58),
+    Background = Color3.fromRGB(0, 0, 0),
+    Surface = Color3.fromRGB(7, 7, 7),
+    SurfaceLight = Color3.fromRGB(15, 15, 15),
+    Text = Color3.fromRGB(245, 245, 245),
+    Muted = Color3.fromRGB(145, 145, 145),
+    Accent = Color3.fromRGB(225, 225, 225),
+    Border = Color3.fromRGB(38, 38, 38),
 }
 
 local function make(className, properties, parent)
@@ -66,8 +66,9 @@ function Window.new(options)
         ClipsDescendants = false,
     }, gui)
     self.Root = root
-    make("UICorner", { CornerRadius = UDim.new(0, 10) }, root)
-    make("UIStroke", { Color = self.Theme.Border, Thickness = 1 }, root)
+    make("UICorner", { CornerRadius = UDim.new(0, 13) }, root)
+    make("UIStroke", { Color = self.Theme.Border, Thickness = 1, Transparency = 0.12 }, root)
+    make("UIGradient", { Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(13, 13, 13)), ColorSequenceKeypoint.new(0.45, Color3.fromRGB(2, 2, 2)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))}), Rotation = 90 }, root)
 
     local top = make("Frame", {
         Name = "TopBar",
@@ -75,7 +76,9 @@ function Window.new(options)
         BackgroundColor3 = self.Theme.Surface,
         BorderSizePixel = 0,
     }, root)
-    make("UICorner", { CornerRadius = UDim.new(0, 10) }, top)
+    make("UICorner", { CornerRadius = UDim.new(0, 13) }, top)
+    make("UIGradient", { Color = ColorSequence.new(Color3.fromRGB(24, 24, 24), Color3.fromRGB(5, 5, 5)), Rotation = 90 }, top)
+    make("Frame", { Name = "GlossLine", Position = UDim2.new(0, 14, 1, -1), Size = UDim2.new(1, -28, 0, 1), BackgroundColor3 = Color3.fromRGB(65, 65, 65), BackgroundTransparency = 0.45, BorderSizePixel = 0 }, top)
 
     make("TextLabel", {
         Name = "Title",
@@ -145,7 +148,9 @@ function Window.new(options)
         BackgroundColor3 = self.Theme.Surface,
         BorderSizePixel = 0,
     }, root)
-    make("UICorner", { CornerRadius = UDim.new(0, 8) }, content)
+    make("UICorner", { CornerRadius = UDim.new(0, 9) }, content)
+    make("UIStroke", { Color = Color3.fromRGB(20, 20, 20), Thickness = 1 }, content)
+    make("UIGradient", { Color = ColorSequence.new(Color3.fromRGB(9, 9, 9), Color3.fromRGB(3, 3, 3)), Rotation = 90 }, content)
     self.Content = content
 
     -- Drag the window from its title bar.
